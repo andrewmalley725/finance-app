@@ -41,13 +41,49 @@ function newAccount(req, res){
 async function getAccounts(req, res){
     const user = await knex.select().from('person').where('userid', req.params.uid);
     knex.select().from('account').where('userid', req.params.uid).then((response) => {
-        res.json({user: user[0].username, accounts: response});
+        let total = 0;
+        for (let i of response){
+            total += i.balance;
+        }
+        res.json({user: user[0].username, total_balance: total, accounts: response});
     });
+}
+
+async function postTransaction(req, res){
+    let date = new Date();
+    date = date.toISOString().slice(0, 19).replace('T', ' ');
+    const data = {
+        accountid: req.body.accountid,
+        amount: req.body.amount,
+        date: date
+    }
+    knex('account')
+    .where('accountid', req.body.accountid)
+    .select('balance')
+    .then((response) => {
+        const newSum = response[0].balance += req.body.amount;
+        return knex('account').where('accountid', req.body.accountid).update('balance', newSum);
+    })
+    .then(() => {
+        knex('transaction')
+        .insert(data)
+        .then(async () => {
+            res.json({
+                response: `Added transaction of ${data.amount} to account #${data.accountid}`, 
+            });
+        });
+    });
+}
+
+function getTransactions(req, res){
+
 }
 
 module.exports = {
     addUser,
     getUsers,
     newAccount,
-    getAccounts
+    getAccounts,
+    postTransaction,
+    getTransactions
 }
