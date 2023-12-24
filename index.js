@@ -1,4 +1,4 @@
-const app = require('./app');
+const app = require('./functions/app');
 
 const PORT = 8080;
 

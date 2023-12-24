@@ -1,5 +1,9 @@
 const knex = require('../models/dbConnect');
-const { hashPass } = require('../function/hashPass')
+const { hashPass } = require('../function/hashPass');
+
+function test(req, res){
+    res.send('Hello World');
+}
 
 function addUser(req, res){
     const newUser = {
@@ -154,5 +158,6 @@ module.exports = {
     getTransactionsByUser,
     getTransactionsByAccount,
     payDay,
-    getPaychecks
+    getPaychecks,
+    test
 }
