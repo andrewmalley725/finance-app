@@ -6,6 +6,7 @@ function hashPass(input) {
   return hash.digest('hex');
 }
 
+
 module.exports = {
-    hashPass
+    hashPass,
 }
