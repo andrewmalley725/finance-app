@@ -15,5 +15,6 @@ apiRouter.get('/userTransactions/:uid', controller.getTransactionsByUser);
 apiRouter.get('/AccTransactions/:acid', controller.getTransactionsByAccount);
 
 apiRouter.post('/payday', controller.payDay);
+apiRouter.get('/paychecks/:uid', controller.getPaychecks);
 
 module.exports = apiRouter;

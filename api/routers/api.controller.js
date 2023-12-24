@@ -39,14 +39,18 @@ function newAccount(req, res){
 }
 
 async function getAccounts(req, res){
+    let total = 0;
     const user = await knex.select().from('person').where('userid', req.params.uid).first();
-    knex.select().from('account').where('userid', req.params.uid).then((response) => {
-        let total = 0;
+    knex.select().from('paycheck').where('userid', req.params.uid).then((response) => {
         for (let i of response){
-            total += i.balance;
+            total += i.amount
         }
-        res.json({user: `${user.firstname} ${user.lastname}`, total_balance: total, accounts: response});
-    });
+    })
+    .then(() => {
+        knex.select().from('account').where('userid', req.params.uid).then((response) => {
+            res.json({user: `${user.firstname} ${user.lastname}`, total_balance: total, accounts: response});
+        });
+    }); 
 }
 
 async function postTransaction(req, res){
@@ -62,7 +66,7 @@ async function postTransaction(req, res){
     .where('accountid', req.body.accountid)
     .select('balance')
     .then((response) => {
-        const newSum = response[0].balance += req.body.amount;
+        const newSum = response[0].balance -= req.body.amount;
         return knex('account').where('accountid', req.body.accountid).update('balance', newSum);
     })
     .then(() => {
@@ -102,16 +106,43 @@ async function payDay(req, res){
     const userid = req.body.userid;
     const value = req.body.amount;
     const accounts = await knex.select().from('account').where('userid', userid);
-    for (let i of accounts){
-        knex('account')
-        .select('balance')
-        .where('accountid', i.accountid)
-        .then(acc => {
-            const newSum = acc[0].balance += (value * i.weight);
-            return knex('account').where('accountid', i.accountid).update('balance', newSum)
-        })
+    let date = new Date();
+    date = date.toISOString().slice(0, 19).replace('T', ' ');
+    const data = {
+        userid: userid,
+        amount: value,
+        date: date
     }
-    res.send('Recorded!');
+    knex('paycheck')
+    .insert(data)
+    .then(() => {
+        for (let i of accounts){
+            knex('account')
+            .select('balance')
+            .where('accountid', i.accountid)
+            .then(acc => {
+                const newSum = acc[0].balance += (value * i.weight);
+                return knex('account').where('accountid', i.accountid).update('balance', newSum)
+            })
+        }
+        res.send('Recorded!');
+    });
+}
+
+async function getPaychecks(req, res){
+    let total = 0;
+    const userid = req.params.uid;
+    const user = await knex.select().from('person').where('userid', userid).first();
+    knex.select().from('paycheck').where('userid', userid).then((response) => {
+        for (let i of response){
+            total += i.amount;
+        }
+        res.json({
+            user: `${user.firstname} ${user.lastname}`,
+            total: total,
+            paychecks: response
+        });
+    });
 }
 
 module.exports = {
@@ -122,5 +153,6 @@ module.exports = {
     postTransaction,
     getTransactionsByUser,
     getTransactionsByAccount,
-    payDay
+    payDay,
+    getPaychecks
 }
