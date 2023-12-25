@@ -4,8 +4,8 @@
   "scripts": {
     "serve": "firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
-    "start": "ENVIRONMENT=dev npm run shell",
-    "deploy": "ENVIRONMENT=prod firebase deploy --only functions",
+    "start": "firebase emulators:start",
+    "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
   "engines": {
