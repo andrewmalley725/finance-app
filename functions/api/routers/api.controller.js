@@ -63,9 +63,17 @@ function newAccount(req, res){
         weight: req.body.weight || 0.0,
         balance: req.body.balance || 0.0
     }
-
     knex('account')
     .insert(data)
+    .then(() => {
+        knex('person')
+        .where('userid', data.userid)
+        .select('balance')
+        .then((response) => {
+            const newSum = response[0].balance += data.balance;
+            return knex('person').where('userid', data.userid).update('balance', newSum);
+        });
+    })
     .then(() => {
         res.json({response: `Added account ${data.account_name}`});
     });
