@@ -5,7 +5,7 @@ function test(req, res){
     res.send('Hello World');
 }
 
-function addUser(req, res){
+async function addUser(req, res){
     const newUser = {
         username: req.body.userName,
         firstname: req.body.first,
@@ -17,9 +17,37 @@ function addUser(req, res){
 
     knex('person')
     .insert(newUser)
-    .then(() => {
-        res.json({reponse: `Added new user ${newUser.username}`});
+    .then(async () => {
+        const user = await knex.select().from('person').where('username', newUser.username).first()
+        res.json({status: `Added new user ${newUser.username}`, record: user});
     });
+}
+
+async function authenticate(req, res){
+    const data = {
+        username: req.body.username,
+        password: req.body.password
+    }
+    let status;
+    let record;
+    const user = await knex.select().from('person').where('username', data.username).first();
+    if (user){
+        if (hashPass(data.password) === user.password){
+            status = 'success';
+            record = user;
+        }
+        else{
+            status = 'please enter a valid password';
+        }
+    }
+    else{
+        status = 'please enter valid credentials';
+    }
+
+    res.json({
+        status: status,
+        record: record
+    })
 }
 
 function getUsers(req, res){
@@ -161,6 +189,7 @@ async function getPaychecks(req, res){
 
 module.exports = {
     addUser,
+    authenticate,
     getUsers,
     newAccount,
     getAccounts,

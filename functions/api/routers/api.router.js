@@ -6,6 +6,7 @@ const apiRouter = express.Router();
 
 apiRouter.post('/newUser', controller.addUser);
 apiRouter.get('/users', controller.getUsers);
+apiRouter.post('/authenticate', controller.authenticate);
 
 apiRouter.post('/newAccount', controller.newAccount);
 apiRouter.get('/accounts/:uid', controller.getAccounts);
