@@ -12,7 +12,7 @@ async function addUser(req, res){
         lastname: req.body.last,
         password: hashPass(req.body.pass),
         email: req.body.email,
-        balance: req.body.balance || 0
+        balance: 0
     }
 
     knex('person')
@@ -147,6 +147,7 @@ async function getTransactionsByAccount(req, res){
 async function payDay(req, res){
     const userid = req.body.userid;
     const value = req.body.amount;
+    const accountid = req.body.accountid;
     const accounts = await knex.select().from('account').where('userid', userid);
     let date = new Date();
     date = date.toISOString().slice(0, 19).replace('T', ' ');
@@ -158,14 +159,24 @@ async function payDay(req, res){
     knex('paycheck')
     .insert(data)
     .then(() => {
-        for (let i of accounts){
+        if (accountid) {
             knex('account')
-            .select('balance')
-            .where('accountid', i.accountid)
-            .then(acc => {
-                const newSum = acc[0].balance += (value * i.weight);
-                return knex('account').where('accountid', i.accountid).update('balance', newSum)
-            });
+                .select('balance')
+                .where('accountid', accountid)
+                .then(acc => {
+                    const newSum = acc[0].balance += value;
+                    return knex('account').where('accountid', accountid).update('balance', newSum)
+                });
+        } else {
+            for (let i of accounts){
+                knex('account')
+                .select('balance')
+                .where('accountid', i.accountid)
+                .then(acc => {
+                    const newSum = acc[0].balance += (value * i.weight);
+                    return knex('account').where('accountid', i.accountid).update('balance', newSum)
+                });
+            }
         }
     })
     .then(() => {
