@@ -1,6 +1,17 @@
 require('dotenv').config();
 
-  const connection = {
+const connections = {
+  dev:  {
+    client: 'mysql',
+    connection: {
+      host : 'localhost',
+      port : 3306,
+      user : 'root',
+      password : process.env.DEV_PASS,
+      database : 'finance_app',
+    }
+  },
+  prod:  {
     client: 'mysql',
     connection: {
       host : process.env.DB_HOST,
@@ -11,8 +22,14 @@ require('dotenv').config();
       ssl: {"rejectUnauthorized":false}
     }
   }
+}
+
+function getConnection(){
+  const env = process.env.NODE_ENV;
+  return connections[env];
+}
  
 
-const knex = require('knex')(connection);
+const knex = require('knex')(getConnection());
 
 module.exports = knex;

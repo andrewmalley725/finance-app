@@ -6,7 +6,12 @@ function hashPass(input) {
   return hash.digest('hex');
 }
 
+function middleWare(){
+  console.log(process.env)
+}
+
 
 module.exports = {
     hashPass,
+    middleWare
 }
