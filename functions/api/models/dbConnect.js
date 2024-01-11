@@ -1,16 +1,6 @@
 require('dotenv').config();
 
 const connections = {
-  dev:  {
-    client: 'mysql',
-    connection: {
-      host : 'localhost',
-      port : 3306,
-      user : 'root',
-      password : process.env.DEV_PASS,
-      database : 'finance_app',
-    }
-  },
   prod:  {
     client: 'mysql',
     connection: {
@@ -26,7 +16,7 @@ const connections = {
 
 function getConnection(){
   const env = process.env.NODE_ENV;
-  return connections[env];
+  return connections.prod;
 }
  
 
