@@ -4,6 +4,7 @@ const controller = require('./api.controller');
 
 const apiRouter = express.Router();
 
+//     ------USER ROUTES------
 /**
  * @swagger
  * /api/newUser:
@@ -82,9 +83,61 @@ const apiRouter = express.Router();
  *       500:
  *         description: Internal server error
  */
+//     ------ACCOUNT ROUTES------
+/**
+ * @swagger
+ * /api/newAccount:
+ *   post:
+ *     summary: Add a new money category
+ *     tags:
+ *         - Accounts
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userid:
+ *                 type: int
+ *               name:
+ *                 type: string
+ *               weight:
+ *                 type: float
+ *               balance:
+ *                 type: float
+ *             example:
+ *               userid: 1
+ *               name: saviongs
+ *               weight: 0.10
+ *               balance: 10.50
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *       500:
+ *         description: Internal server error
+ */
 
-
-
+/**
+ * @swagger
+ * /api/accounts/{uid}:
+ *   get:
+ *     summary: Get all accounts associated with a user
+ *     tags:
+ *         - Accounts
+ *     parameters:
+ *       - in: path
+ *         name: uid
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: userid
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *       500:
+ *         description: Internal server error
+ */
 apiRouter.post('/newUser', controller.addUser);
 apiRouter.get('/users', controller.getUsers);
 apiRouter.post('/authenticate', controller.authenticate);
