@@ -179,7 +179,7 @@ paths:
 
   /api/accTransactions/{acid}:
     get:
-      summary: "Get all accounts associated with a user"
+      summary: "Get all transactions associated with an account"
       tags:
         - "Transactions"
       parameters:
