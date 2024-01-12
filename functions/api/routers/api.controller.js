@@ -93,6 +93,7 @@ async function postTransaction(req, res){
         userid: req.body.userid,
         accountid: req.body.accountid,
         amount: req.body.amount,
+        description: req.body.description,
         date: date
     }
     knex('account')
@@ -148,12 +149,15 @@ async function payDay(req, res){
     const userid = req.body.userid;
     const value = req.body.amount;
     const accountid = req.body.accountid;
+    const description = req.body.description;
     const accounts = await knex.select().from('account').where('userid', userid);
     let date = new Date();
     date = date.toISOString().slice(0, 19).replace('T', ' ');
     const data = {
         userid: userid,
         amount: value,
+        accountid: accountid,
+        description: description,
         date: date
     }
     knex('paycheck')
@@ -194,7 +198,6 @@ async function payDay(req, res){
 }
 
 async function getPaychecks(req, res){
-    let total = 0;
     const userid = req.params.uid;
     const user = await knex.select().from('person').where('userid', userid).first();
     knex.select().from('paycheck').where('userid', userid).then((response) => {

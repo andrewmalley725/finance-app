@@ -1,0 +1,245 @@
+openapi: "3.0.0"
+info:
+  title: "Finance API"
+  description: "Manage your finances"
+  version: "1.0.0"
+basePath: "/api"
+schemes:
+  - "http"
+produces:
+  - "application/json"
+paths:
+  /api/newUser:
+    post:
+      summary: "Add a new user"
+      tags:
+        - "Users"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userName:
+                  type: string
+                first:
+                  type: string
+                last:
+                  type: string
+                pass:
+                  type: string
+                email:
+                  type: string
+              example:
+                userName: example
+                first: example
+                last: example
+                pass: example
+                email: example
+      responses:
+        200:
+          description: "Successful response"
+        500:
+          description: "Internal server error"
+
+  /api/users:
+    get:
+      summary: "Get all users"
+      tags:
+        - "Users"
+      responses:
+        200:
+          description: "Successful response"
+        500:
+          description: "Internal server error"
+
+  /api/authenticate:
+    post:
+      summary: "Login to user account"
+      tags:
+        - "Users"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              example:
+                username: example
+                password: example
+      responses:
+        200:
+          description: "Successful response"
+        500:
+          description: "Internal server error"
+
+  /api/newAccount:
+    post:
+      summary: "Add a new money category"
+      tags:
+        - "Accounts"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userid:
+                  type: integer
+                name:
+                  type: string
+                weight:
+                  type: float
+                balance:
+                  type: float
+              example:
+                userid: 1
+                name: savings
+                weight: 0.10
+                balance: 10.50
+      responses:
+        200:
+          description: "Successful response"
+        500:
+          description: "Internal server error"
+
+  /api/accounts/{uid}:
+    get:
+      summary: "Get all accounts associated with a user"
+      tags:
+        - "Accounts"
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          schema:
+            type: integer
+          description: userid
+      responses:
+        200:
+          description: "Successful response"
+        500:
+          description: "Internal server error"
+
+  /api/newTransaction:
+    post:
+      summary: "Add an expense"
+      tags:
+        - "Transactions"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userid:
+                  type: integer
+                accountid:
+                  type: integer
+                amount:
+                  type: float
+                description:
+                  type: string
+              example:
+                userid: 1
+                accountid: 1
+                amount: 10.37
+                description: lunch
+      responses:
+        200:
+          description: "Successful response"
+        500:
+          description: "Internal server error"
+
+  /api/userTransactions/{uid}:
+    get:
+      summary: "Get all transactions associated with a user"
+      tags:
+        - "Transactions"
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          schema:
+            type: integer
+          description: userid
+      responses:
+        200:
+          description: "Successful response"
+        500:
+          description: "Internal server error"
+
+  /api/accTransactions/{acid}:
+    get:
+      summary: "Get all accounts associated with a user"
+      tags:
+        - "Transactions"
+      parameters:
+        - in: path
+          name: acid
+          required: true
+          schema:
+            type: integer
+          description: accountid
+      responses:
+        200:
+          description: "Successful response"
+        500:
+          description: "Internal server error"
+
+  /api/payday:
+    post:
+      summary: "Add income"
+      tags:
+        - "Income"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userid:
+                  type: integer
+                accountid:
+                  type: integer
+                amount:
+                  type: float
+                description:
+                  type: string
+              example:
+                userid: 1
+                accountid: null
+                amount: 2000.57
+                description: paycheck
+      responses:
+        200:
+          description: "Successful response"
+        500:
+          description: "Internal server error"
+
+  /api/paychecks/{uid}:
+    get:
+      summary: "Get all incomes associated with a user"
+      tags:
+        - "Income"
+      parameters:
+        - in: path
+          name: uid
+          required: true
+          schema:
+            type: integer
+          description: userid
+      responses:
+        200:
+          description: "Successful response"
+        500:
+          description: "Internal server error"
