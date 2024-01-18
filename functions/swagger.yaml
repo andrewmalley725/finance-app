@@ -3,7 +3,6 @@ info:
   title: "Finance API"
   description: "Manage your finances"
   version: "1.0.0"
-basePath: "/api"
 schemes:
   - "http"
 produces:
@@ -79,11 +78,11 @@ paths:
         500:
           description: "Internal server error"
 
-  /api/newAccount:
+  /api/newCategory:
     post:
       summary: "Add a new money category"
       tags:
-        - "Accounts"
+        - "Categories"
       requestBody:
         required: true
         content:
@@ -110,11 +109,11 @@ paths:
         500:
           description: "Internal server error"
 
-  /api/accounts/{uid}:
+  /api/categories/{uid}:
     get:
       summary: "Get all accounts associated with a user"
       tags:
-        - "Accounts"
+        - "Categories"
       parameters:
         - in: path
           name: uid
@@ -128,11 +127,11 @@ paths:
         500:
           description: "Internal server error"
 
-  /api/newTransaction:
+  /api/newExpense:
     post:
       summary: "Add an expense"
       tags:
-        - "Transactions"
+        - "Expense"
       requestBody:
         required: true
         content:
@@ -159,11 +158,11 @@ paths:
         500:
           description: "Internal server error"
 
-  /api/userTransactions/{uid}:
+  /api/userExpenses/{uid}:
     get:
       summary: "Get all transactions associated with a user"
       tags:
-        - "Transactions"
+        - "Expense"
       parameters:
         - in: path
           name: uid
@@ -177,11 +176,11 @@ paths:
         500:
           description: "Internal server error"
 
-  /api/accTransactions/{acid}:
+  /api/accExpenses/{acid}:
     get:
-      summary: "Get all transactions associated with an account"
+      summary: "Get all expenses associated with an account"
       tags:
-        - "Transactions"
+        - "Expense"
       parameters:
         - in: path
           name: acid

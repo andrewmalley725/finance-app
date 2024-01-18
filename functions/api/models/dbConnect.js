@@ -15,7 +15,7 @@ const connections = {
 }
 
 function getConnection(){
-  const env = process.env.NODE_ENV;
+  //const env = process.env.NODE_ENV;
   return connections.prod;
 }
  
