@@ -2,13 +2,13 @@ const express = require('express');
 
 const cors = require('cors');
 
-const path = require('path');
-
 const swaggerUi = require('swagger-ui-express');
 
 const YAML = require('yamljs');
 
 const swaggerDocument = YAML.load('./swagger.yaml');
+
+const apiKeyMiddleware = require('./api/function/apiKeyMiddleware');
 
 const app = express();
 
@@ -22,8 +22,10 @@ app.use(express.json());
 
 app.use(express.urlencoded());
 
-app.use('/api', apiRouter);
-
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+app.use(apiKeyMiddleware.apiKeyMiddleware);
+
+app.use('/api', apiRouter);
 
 module.exports = app;

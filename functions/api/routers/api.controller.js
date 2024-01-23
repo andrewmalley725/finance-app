@@ -1,5 +1,7 @@
 const knex = require('../models/dbConnect');
 const { hashPass } = require('../function/hashPass');
+require('dotenv').config();
+
 
 function test(req, res){
     res.send('Hello World');
@@ -19,7 +21,7 @@ async function addUser(req, res){
     .insert(newUser)
     .then(async () => {
         const user = await knex.select().from('person').where('username', newUser.username).first()
-        res.json({status: `Added new user ${newUser.username}`, record: user});
+        res.json({status: `Added new user ${newUser.username}`, record: user, apiKey: process.env.API_KEY});
     });
 }
 
@@ -30,11 +32,13 @@ async function authenticate(req, res){
     }
     let status;
     let record;
+    let apiKey;
     const user = await knex.select().from('person').where('username', data.username).first();
     if (user){
         if (hashPass(data.password) === user.password){
             status = 'success';
             record = user;
+            apiKey = process.env.API_KEY;
         }
         else{
             status = 'please enter a valid password';
@@ -46,7 +50,8 @@ async function authenticate(req, res){
 
     res.json({
         status: status,
-        record: record
+        record: record,
+        apiKey: apiKey
     })
 }
 

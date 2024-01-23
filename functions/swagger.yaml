@@ -47,6 +47,12 @@ paths:
       summary: "Get all users"
       tags:
         - "Users"
+      parameters:
+        - name: x-api-key
+          in: header
+          description: 
+          required: true
+          type: string
       responses:
         200:
           description: "Successful response"
@@ -81,6 +87,12 @@ paths:
   /api/newCategory:
     post:
       summary: "Add a new money category"
+      parameters:
+        - name: x-api-key
+          in: header
+          description: 
+          required: true
+          type: string
       tags:
         - "Categories"
       requestBody:
@@ -121,6 +133,11 @@ paths:
           schema:
             type: integer
           description: userid
+        - name: x-api-key
+          in: header
+          description: 
+          required: true
+          type: string
       responses:
         200:
           description: "Successful response"
@@ -130,6 +147,12 @@ paths:
   /api/newExpense:
     post:
       summary: "Add an expense"
+      parameters:
+        - name: x-api-key
+          in: header
+          description: 
+          required: true
+          type: string
       tags:
         - "Expense"
       requestBody:
@@ -170,6 +193,11 @@ paths:
           schema:
             type: integer
           description: userid
+        - name: x-api-key
+          in: header
+          description: 
+          required: true
+          type: string
       responses:
         200:
           description: "Successful response"
@@ -188,6 +216,11 @@ paths:
           schema:
             type: integer
           description: accountid
+        - name: x-api-key
+          in: header
+          description: 
+          required: true
+          type: string
       responses:
         200:
           description: "Successful response"
@@ -197,6 +230,12 @@ paths:
   /api/payday:
     post:
       summary: "Add income"
+      parameters:
+        - name: x-api-key
+          in: header
+          description: 
+          required: true
+          type: string
       tags:
         - "Income"
       requestBody:
@@ -237,6 +276,11 @@ paths:
           schema:
             type: integer
           description: userid
+        - name: x-api-key
+          in: header
+          description: 
+          required: true
+          type: string
       responses:
         200:
           description: "Successful response"
