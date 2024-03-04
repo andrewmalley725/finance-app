@@ -70,35 +70,31 @@ function getUsers(req, res){
     });
 }
 
-function newAccount(req, res){
+async function newAccount(req, res){
+    const user = await knex.select().from('person').where('userid', req.body.userid).first();
     const data = {
-        userid: req.body.userid,
+        userid: user.userid,
         account_name: req.body.name,
         weight: req.body.weight || 0.0,
-        balance: req.body.balance || 0.0
+        balance: req.body.balance || req.body.weight * user.balance
     }
     knex('account')
     .insert(data)
     .then(() => {
         knex('account')
         .where('account_name', 'Unallocated funds').where('userid', data.userid)
-        .select('weight')
+        .select('weight', 'balance')
         .then((response) => {
             const newWeight = response[0].weight -= data.weight;
+            const newBalance = user.balance *= newWeight;
             knex('account').where('account_name', 'Unallocated funds').where('userid', data.userid)
-            .update('weight', newWeight).then(() => {
-                knex('person')
-                .where('userid', data.userid)
-                .select('balance')
-                .then((response) => {
-                    const newSum = response[0].balance += data.balance;
-                    return knex('person').where('userid', data.userid).update('balance', newSum);
-                });
+            .update({
+                weight: newWeight,
+                balance: newBalance
+            }).then(() => {
+                res.json({response: `Added account ${data.account_name}`});
             })
         })
-    })
-    .then(() => {
-        res.json({response: `Added account ${data.account_name}`});
     });
 }
 
