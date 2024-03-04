@@ -20,8 +20,17 @@ async function addUser(req, res){
     knex('person')
     .insert(newUser)
     .then(async () => {
-        const user = await knex.select().from('person').where('username', newUser.username).first()
-        res.json({status: `Added new user ${newUser.username}`, record: user, apiKey: process.env.API_KEY});
+        const user = await knex.select().from('person').where('username', newUser.username).first();
+        const unallocated = {
+            userid: user.userid,
+            account_name: 'Unallocated funds',
+            weight: 1.0,
+            balance: 0
+        }
+        knex('account').insert(unallocated).then(() => {
+            res.json({status: `Added new user ${newUser.username}`, record: user, apiKey: process.env.API_KEY});
+        }
+        );
     });
 }
 
@@ -71,13 +80,22 @@ function newAccount(req, res){
     knex('account')
     .insert(data)
     .then(() => {
-        knex('person')
-        .where('userid', data.userid)
-        .select('balance')
+        knex('account')
+        .where('account_name', 'Unallocated funds').where('userid', data.userid)
+        .select('weight')
         .then((response) => {
-            const newSum = response[0].balance += data.balance;
-            return knex('person').where('userid', data.userid).update('balance', newSum);
-        });
+            const newWeight = response[0].weight -= data.weight;
+            knex('account').where('account_name', 'Unallocated funds').where('userid', data.userid)
+            .update('weight', newWeight).then(() => {
+                knex('person')
+                .where('userid', data.userid)
+                .select('balance')
+                .then((response) => {
+                    const newSum = response[0].balance += data.balance;
+                    return knex('person').where('userid', data.userid).update('balance', newSum);
+                });
+            })
+        })
     })
     .then(() => {
         res.json({response: `Added account ${data.account_name}`});
