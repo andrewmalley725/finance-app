@@ -131,7 +131,10 @@ async function postTransaction(req, res){
 async function getTransactionsByUser(req, res){
     const userid = req.params.uid;
     const user = await knex.select().from('person').where('userid', userid).first();
-    const transactions = await knex.select().from('transaction').where('userid', userid);
+    const transactions = await knex('transaction')
+        .select('transaction.*', 'account.account_name')
+        .join('account', 'transaction.accountid', 'account.accountid')
+        .where('transaction.userid', userid);
     res.json({
         user: user.firstname + ' ' + user.lastname,
         transactions: transactions
