@@ -10,6 +10,7 @@ apiRouter.post('/authenticate', controller.authenticate);
 
 apiRouter.post('/newCategory', controller.newAccount);
 apiRouter.get('/categories/:uid', controller.getAccounts);
+apiRouter.delete('/deleteCategory/:acid', controller.deleteAccount);
 
 apiRouter.post('/newExpense', controller.postTransaction);
 apiRouter.get('/userExpenses/:uid', controller.getTransactionsByUser);

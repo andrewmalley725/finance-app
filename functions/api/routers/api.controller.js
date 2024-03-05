@@ -9,7 +9,7 @@ function test(req, res){
 
 async function addUser(req, res){
     const newUser = {
-        username: req.body.userName,
+        username: req.body.userName.toLowerCase(),
         firstname: req.body.first,
         lastname: req.body.last,
         password: hashPass(req.body.pass),
@@ -36,7 +36,7 @@ async function addUser(req, res){
 
 async function authenticate(req, res){
     const data = {
-        username: req.body.username,
+        username: req.body.username.toLowerCase(),
         password: req.body.password
     }
     let status;
@@ -103,6 +103,30 @@ async function getAccounts(req, res){
     knex.select().from('account').where('userid', req.params.uid).then((response) => {
         res.json({user: `${user.firstname} ${user.lastname}`, total_balance: user.balance, accounts: response});
     });
+}
+
+async function deleteAccount(req, res){
+    const account = await knex.select().from('account').where('accountid', req.params.acid).first();
+    const weight = account.weight;
+    const uid = account.userid
+    const user = await knex.select().from('person').where('userid', uid).first()
+    knex('account').where('accountid', req.params.acid).del()
+    .then(() => {
+        console.log(account);
+        knex('account').where('account_name', 'Unallocated funds').where('userid', uid)
+        .select('weight', 'balance')
+        .then((response) => {
+            const newWeight = response[0].weight += weight;
+            const newBalance = user.balance *= newWeight;
+            knex('account').where('account_name', 'Unallocated funds').where('userid', uid)
+            .update({
+                weight: newWeight,
+                balance: newBalance
+            }).then(() => {
+                res.json({response: `Removed ${account.account_name}`});
+            })
+        })
+    })
 }
 
 async function postTransaction(req, res){
@@ -242,5 +266,6 @@ module.exports = {
     getTransactionsByAccount,
     payDay,
     getPaychecks,
+    deleteAccount,
     test
 }
