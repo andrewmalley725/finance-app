@@ -168,14 +168,60 @@ async function postTransaction(req, res){
 
 async function getTransactionsByUser(req, res){
     const userid = req.params.uid;
-    const user = await knex.select().from('person').where('userid', userid).first();
-    const transactions = await knex('transaction')
+    let transactions = knex('transaction')
         .select('transaction.*', 'account.account_name')
         .join('account', 'transaction.accountid', 'account.accountid')
         .where('transaction.userid', userid);
+
+    if (req.query.description === 'true') {
+        transactions = transactions.then(res => res.sort((a, b) => {
+          if (req.query.desc === 'false') {
+            return a.description.localeCompare(b.description);
+          } else {
+            return b.description.localeCompare(a.description);
+          }
+        }));
+      }
+
+    if (req.query.date === 'true') {
+    const orderDirection = req.query.desc === 'true';
+    transactions = transactions.then(res => res.sort((a, b) => {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+    
+        if (!orderDirection) {
+        return dateA - dateB;
+        } else {
+        return dateB - dateA;
+        }
+    }));
+    }      
+
+    if (req.query.amount === 'true') {
+    const orderDirection = req.query.desc === 'true';
+    transactions = transactions.then(res => res.sort((a, b) => {
+        const amountA = parseFloat(a.amount);
+        const amountB = parseFloat(b.amount);
+    
+        if (!orderDirection) {
+        return amountA - amountB;
+        } else {
+        return amountB - amountA;
+        }
+    }));
+    }
+      
+    if (req.query.account) {
+        const account = req.query.account;
+        transactions = transactions.then(res => {
+            return res.filter(transaction => transaction.account_name === account);
+        })
+    }
+
+    const data = await transactions;
+
     res.json({
-        user: user.firstname + ' ' + user.lastname,
-        transactions: transactions
+        transactions: data
     });
 }
 

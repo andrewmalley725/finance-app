@@ -187,6 +187,31 @@ paths:
       tags:
         - "Expense"
       parameters:
+        - in: query
+          name: description
+          description: "Order by description"
+          schema:
+            type: boolean
+        - in: query
+          name: amount
+          description: "Order by amount"
+          schema:
+            type: boolean
+        - in: query
+          name: date
+          description: "Order by date"
+          schema:
+            type: boolean
+        - in: query
+          name: desc
+          description: "Descending order"
+          schema:
+            type: boolean
+        - in: query
+          name: account
+          description: "Filter by account"
+          schema:
+            type: string
         - in: path
           name: uid
           required: true
