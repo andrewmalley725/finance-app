@@ -173,49 +173,51 @@ async function getTransactionsByUser(req, res){
         .join('account', 'transaction.accountid', 'account.accountid')
         .where('transaction.userid', userid);
 
-    if (req.query.description === 'true') {
+    if (req.query.filter === 'date'){
+        const orderDirection = req.query.desc === 'true';
         transactions = transactions.then(res => res.sort((a, b) => {
-          if (req.query.desc === 'false') {
-            return a.description.localeCompare(b.description);
-          } else {
-            return b.description.localeCompare(a.description);
-          }
-        }));
-      }
-
-    if (req.query.date === 'true') {
-    const orderDirection = req.query.desc === 'true';
-    transactions = transactions.then(res => res.sort((a, b) => {
-        const dateA = new Date(a.date).getTime();
-        const dateB = new Date(b.date).getTime();
-    
+            const dateA = new Date(a.date).getTime();
+            const dateB = new Date(b.date).getTime();
+        
         if (!orderDirection) {
-        return dateA - dateB;
+            return dateA - dateB;
         } else {
-        return dateB - dateA;
-        }
-    }));
-    }      
-
-    if (req.query.amount === 'true') {
-    const orderDirection = req.query.desc === 'true';
-    transactions = transactions.then(res => res.sort((a, b) => {
-        const amountA = parseFloat(a.amount);
-        const amountB = parseFloat(b.amount);
-    
-        if (!orderDirection) {
-        return amountA - amountB;
-        } else {
-        return amountB - amountA;
+            return dateB - dateA;
         }
     }));
     }
-      
-    if (req.query.account) {
-        const account = req.query.account;
-        transactions = transactions.then(res => {
-            return res.filter(transaction => transaction.account_name === account);
-        })
+    else if (req.query.filter === 'amount'){
+        const orderDirection = req.query.desc === 'true';
+        transactions = transactions.then(res => res.sort((a, b) => {
+            const amountA = parseFloat(a.amount);
+            const amountB = parseFloat(b.amount);
+        
+        if (!orderDirection) {
+            return amountA - amountB;
+        } else {
+            return amountB - amountA;
+            }
+        }));
+    }
+    else if (req.query.filter === 'description') {
+        transactions = transactions.then(res => res.sort((a, b) => {
+        if (req.query.desc === 'false') {
+            return a.description.localeCompare(b.description);
+        } else {
+            return b.description.localeCompare(a.description);
+        }
+        }));
+    }
+    else if (req.query.filter === 'account'){
+        transactions = transactions.then(res => res.sort((a, b) => {
+        if (req.query.desc === 'false') {
+            return a.account_name.localeCompare(b.account_name);
+        } else {
+            return b.account_name.localeCompare(a.account_name);
+        }
+        }));
+    } else {
+        console.log('no filter applied');
     }
 
     const data = await transactions;
