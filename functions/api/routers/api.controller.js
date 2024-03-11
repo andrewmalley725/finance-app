@@ -156,7 +156,7 @@ async function postTransaction(req, res){
         })
     })
     .then(() => {
-        knex('transaction')
+        knex('transactions')
         .insert(data)
         .then(() => {
             res.json({
@@ -168,10 +168,10 @@ async function postTransaction(req, res){
 
 async function getTransactionsByUser(req, res){
     const userid = req.params.uid;
-    let transactions = knex('transaction')
-        .select('transaction.*', 'account.account_name')
-        .join('account', 'transaction.accountid', 'account.accountid')
-        .where('transaction.userid', userid);
+    let transactions = knex('transactions')
+        .select('transactions.*', 'account.account_name')
+        .join('account', 'transactions.accountid', 'account.accountid')
+        .where('transactions.userid', userid);
 
     if (req.query.filter === 'date'){
         const orderDirection = req.query.desc === 'true';
@@ -231,7 +231,7 @@ async function getTransactionsByAccount(req, res){
     const accountid = req.params.acid;
     const account = await knex.select().from('account').where('accountid', accountid).first();
     const user = await knex.select().from('person').where('userid', account.userid).first();
-    const transactions = await knex.select().from('transaction').where('accountid', accountid);
+    const transactions = await knex.select().from('transactions').where('accountid', accountid);
     res.json({
         user: `${user.firstname} ${user.lastname}`,
         account: account,
