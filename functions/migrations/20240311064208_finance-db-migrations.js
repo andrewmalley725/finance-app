@@ -11,7 +11,7 @@ exports.up = function(knex) {
         table.string('lastname', 20);
         table.string('password', 64);
         table.string('email', 100);
-        table.decimal('balance', 14, 3);
+        table.decimal('balance', 14, 3).nullable();
       })
   
       .createTable('account', function(table) {
